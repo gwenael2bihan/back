@@ -78,43 +78,8 @@ app.get("/", (req, res) => {
 
 require('./routes/auth.routes')(app);
 require('./routes/user.routes')(app);
+require('./routes/payment.routes')(app);
 
-app.post('/create-checkout-session', async (req, res) => {
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: 'T-shirt',
-          },
-          unit_amount: 2000,
-        },
-        quantity: 1,
-      },
-    ],
-    mode: 'payment',
-    success_url: 'https://example.com/success',
-    cancel_url: 'https://example.com/cancel',
-  });
-
-  res.redirect(303, session.url);
-});
-
-app.post('/api/charge', async (req, res) => {
-  const { id, amount } = req.body;
-  console.log("TEST");
-  const payment = await stripe.paymentIntents.create({
-    amount,
-    currency: 'USD',
-    description: 'patate',
-    payment_methode: id,
-    confirm: true
-  });
-  console.log(payment);
-  return res.status(200).json({ confirm: '1232' })
-});
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
